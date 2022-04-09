@@ -1,0 +1,52 @@
+OPC.slider('seed', Math.floor(Math.random()*1000), 0, 1000, 1);
+OPC.slider('flower_alpha', 10 + Math.floor(Math.random()*90), 10, 100, 1);
+OPC.slider('flower_rugosity', Math.floor(Math.random()*100), 0, 100, 1);
+OPC.slider('flower_hue', Math.floor(Math.random()*360), 0, 360, 1);
+OPC.slider('flower_hue_variation', -75+Math.floor(Math.random()*150), -75, 75, 1);
+/** OPC END**/
+
+var heightFactor;
+var bg;
+
+function setup() {
+	createCanvas(windowWidth, windowHeight);
+	colorMode(HSB, 360, 100, 100, 100);
+	heightFactor = height/545;
+	bg = createBackground();
+}
+
+function  windowResized() {
+	resizeCanvas(windowWidth, windowHeight);
+	heightFactor = height/545;
+	bg = createBackground();
+}
+
+function draw() {	
+	randomSeed(seed);
+	noiseSeed(random(Number.MAX_SAFE_INTEGER));
+	
+	const GREEN = color(120, 50, 20);
+	
+	//background("WhiteSmoke");
+	image(bg, 0, 0);
+	
+	let pos = {x: width/2, y: height/2};
+	stemData = generateStemData(4 /*nPoints*/);
+	
+	petals(pos, stemData.angle, 5 /*nPetals*/, 200*heightFactor /*r0*/);
+
+	stroke(GREEN);
+	strokeWeight(0.5*heightFactor);
+	fill(GREEN);
+	
+	stem(pos, stemData.dx, stemData.dy);
+	sepal(pos, stemData.angle);
+}
+
+function createBackground() {
+	const COLOR = {HUE: 30, SATURATION: 2, BRIGHTNESS: {MIN: 80, MAX: 100}};
+	const DIAMETER = {MIN: height, MAX: 3*height, STEP: 20*heightFactor};
+	
+  let bg = createGraphics(width, height);
+	bg.colorMode(HSB, 360, 100, 100, 100);
+  bg.noStroke();
