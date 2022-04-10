@@ -103,3 +103,58 @@ function stem(c, dx, dy) {
 	const N_POINTS = dx.length;
 	const NOISE = {DISPLACEMENT: 0.5, FACTOR:0.1};
 	const Y_LINE = {A: 1, B: 1};
+push();
+	translate(c.x, c.y);
+	for (let j = 0; j < 1; j++) {
+		beginShape();
+		curveVertex(0, 0);
+		curveVertex(0, 0);
+		for (let i = 0; i < N_POINTS; i++) {
+				curveVertex(dx[i]-(noise(0.1*j)), dy*(1+i));
+		}
+		let noiseD = random();
+		for (let i = N_POINTS-2; i >= 0; i--) {
+				curveVertex(dx[i]+(noise(NOISE.DISPLACEMENT + NOISE.FACTOR*j)), dy*(Y_LINE.A*i + Y_LINE.B));
+		}
+		curveVertex(0, 0);
+		curveVertex(0, 0);
+		endShape();
+	}
+	pop();
+}
+
+function petals(position, orientation, nPetals, r0) {
+	const ANGLE = {START:165, STEP:30, VARIATION:7};
+	const DISLOCATION = 2*heightFactor;
+	
+	push();
+	translate(position.x, position.y);
+	rotate(orientation);
+	for (let i = 0; i < nPetals; i++) {
+		let theta = ANGLE.START + ANGLE.STEP*i + random(-ANGLE.VARIATION, ANGLE.VARIATION);
+		let noiseSize = random();
+		petal({x:0, y:-DISLOCATION}, theta, r0, noiseSize);
+	}
+	pop();
+}
+
+function petal(position, orientation, r0, noiseSize) {
+	const NOISE_DISPLACEMENT = random(100);
+	const RUGOSITY_FACTOR = 0.0001;
+	const COLOR = {MAX_HUE:360, SATURATION: 50, BRIGHTNESS:80};
+	const ANGLE = {BEGIN: 0, END: 90};
+	const TRANSPARENCY_FACTOR = log(flower_alpha)/r0;
+	const STEP = {STROKE: 4*heightFactor, DISTANCE: 3*heightFactor};
+	
+	push();
+	translate(position.x, position.y);
+	rotate(radians(orientation));
+	
+	noFill();
+	strokeWeight(STEP.DISTANCE);
+	
+	for (let ri = 0; ri < r0; ri += STEP.DISTANCE) {		
+		let transparency = exp(TRANSPARENCY_FACTOR*ri);
+		let deltaHue = map(ri, 0, r0, flower_hue_variation, 0);
+		let hue = (flower_hue + deltaHue + COLOR.MAX_HUE)%COLOR.MAX_HUE;
+		stroke(hue, COLOR.SATURATION, COLOR.BRIGHTNESS, transparency);
