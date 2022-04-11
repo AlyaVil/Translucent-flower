@@ -158,3 +158,16 @@ function petal(position, orientation, r0, noiseSize) {
 		let deltaHue = map(ri, 0, r0, flower_hue_variation, 0);
 		let hue = (flower_hue + deltaHue + COLOR.MAX_HUE)%COLOR.MAX_HUE;
 		stroke(hue, COLOR.SATURATION, COLOR.BRIGHTNESS, transparency);
+beginShape();
+		for(let i = ANGLE.BEGIN; i < ANGLE.END; ++i) {
+			let theta = radians(i);
+			let rugosity = RUGOSITY_FACTOR*flower_rugosity*(r0-ri);
+			let rNoise = noise(NOISE_DISPLACEMENT + theta - rugosity);
+			rNoise = map(rNoise, 0, 1, 1-noiseSize, 1+noiseSize) ;
+			let r = ri*rNoise*cos(theta)*sin(theta);
+			vertex(r*cos(theta), r*sin(theta));
+		}
+		endShape();
+	}
+	pop();
+}
